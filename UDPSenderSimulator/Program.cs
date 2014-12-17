@@ -35,6 +35,9 @@ namespace UDPSenderSimulator
                 destinationIP[3] = 5;
 
                 //Command
+                //0=none
+                //1=new album
+                //2=current album
                 byte command = 0x01;
 
                 //Signal end of Header Info
@@ -46,12 +49,12 @@ namespace UDPSenderSimulator
                 cutoffSequence[4] = 111;
                 cutoffSequence[5] = 111;
 
-                //Message id (I can see this not being needed) It does however give us a way to show which songs came in together but this could be done elsewhere
-                //Amount of breaks
+                //Message ID for now is the unique ID
                 byte[] message = new byte[3];
-                message[0] = 0x88;  //id
-                message[1] = 0x89;  //id
-                message[2] = 5;     //breaks
+                message[0] = 0x57;  //id
+                message[1] = 0x51;  //id
+                //Amount of breaks
+                message[2] = 1;     //songs
 
                 byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + message.Length + 1];
                 sourceIP.CopyTo(SendArray, 0);

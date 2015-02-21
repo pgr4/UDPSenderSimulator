@@ -10,7 +10,14 @@ namespace UDPSenderSimulator
 {
     class Program
     {
+        private const int listenPort = 30003;
+
         static void Main(string[] args)
+        {
+            Send();
+        }
+
+        private static void Send()
         {
             try
             {
@@ -67,12 +74,37 @@ namespace UDPSenderSimulator
 
                 Console.WriteLine("Message sent to the broadcast address");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.Write(e.Message + "\n");
                 Console.Write(e.InnerException);
                 Console.Read();
             }
         }
+
+        private static void Receive()
+        {
+            UdpClient listener = new UdpClient(listenPort);
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
+            try
+            {
+                while (true)
+                {
+                    int pointer = 0;
+
+                    byte[] bytes = listener.Receive(ref groupEP);
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                listener.Close();
+            }
+
+        }
+
     }
 }

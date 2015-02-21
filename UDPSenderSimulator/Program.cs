@@ -14,16 +14,80 @@ namespace UDPSenderSimulator
 
         static void Main(string[] args)
         {
-            Send();
+            //ipToInt(192,168,1,247);
+            SendArduinoMessage();
+            //SendAppMessage();
+            //Receive();
         }
 
-        private static void Send()
+        private static void SendArduinoMessage()
         {
             try
             {
                 Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-                IPAddress broadcast = IPAddress.Parse("192.168.1.255");
+                IPAddress broadcast = IPAddress.Parse("192.168.1.23");
+
+                IPEndPoint ep = new IPEndPoint(broadcast, 30003);
+
+                //Sender IP
+                byte[] sourceIP = new byte[4];
+                sourceIP[0] = 192;
+                sourceIP[1] = 168;
+                sourceIP[2] = 1;
+                sourceIP[3] = 2;
+
+                //Destination IP
+                byte[] destinationIP = new byte[4];
+                destinationIP[0] = 192;
+                destinationIP[1] = 168;
+                destinationIP[2] = 1;
+                destinationIP[3] = 5;
+
+                //Command
+                //0=gotoTrack
+                //1=play
+                //2=lift
+                //3=stop
+                byte command = 0x00;
+
+                //Signal end of Header Info
+                byte[] cutoffSequence = new byte[6];
+                cutoffSequence[0] = 111;
+                cutoffSequence[1] = 111;
+                cutoffSequence[2] = 111;
+                cutoffSequence[3] = 111;
+                cutoffSequence[4] = 111;
+                cutoffSequence[5] = 111;
+
+                byte message = 0x51;
+
+                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 1 + 1];
+                sourceIP.CopyTo(SendArray, 0);
+                destinationIP.CopyTo(SendArray, 4);
+                SendArray[8] = command;
+                cutoffSequence.CopyTo(SendArray, 9);
+                SendArray[15] = command;
+
+                s.SendTo(SendArray, ep);
+
+                Console.WriteLine("Message sent to the broadcast address");
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message + "\n");
+                Console.Write(e.InnerException);
+                Console.Read();
+            }
+        }
+
+        private static void SendAppMessage()
+        {
+            try
+            {
+                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+                IPAddress broadcast = IPAddress.Parse("192.168.1.23");
 
                 IPEndPoint ep = new IPEndPoint(broadcast, 30003);
 
@@ -103,6 +167,16 @@ namespace UDPSenderSimulator
             {
                 listener.Close();
             }
+
+        }
+
+        private static void ipToInt(uint f, uint s, uint t, uint l)
+        {
+            uint ip = 0;
+            ip += f << 24;
+            ip += s << 16;
+            ip += t << 8;
+            ip += l;
 
         }
 

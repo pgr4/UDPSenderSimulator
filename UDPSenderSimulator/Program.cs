@@ -15,9 +15,9 @@ namespace UDPSenderSimulator
         static void Main(string[] args)
         {
             //ipToInt(192,168,1,247);
-            SendArduinoMessage();
+            //SendArduinoMessage();
             //SendAppMessage();
-            //Receive();
+            Receive();
         }
 
         private static void SendArduinoMessage()
@@ -45,11 +45,11 @@ namespace UDPSenderSimulator
                 destinationIP[3] = 5;
 
                 //Command
-                //0=gotoTrack
-                //1=play
-                //2=lift
-                //3=stop
-                byte command = 0x00;
+                //10=gotoTrack
+                //11=play
+                //12=lift
+                //13=stop
+                byte command = 0x10;
 
                 //Signal end of Header Info
                 byte[] cutoffSequence = new byte[6];

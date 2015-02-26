@@ -14,10 +14,10 @@ namespace UDPSenderSimulator
 
         static void Main(string[] args)
         {
-            //ipToInt(192,168,1,247);
-            //SendArduinoMessage();
+            //ipToInt(1,202,23);
+            SendArduinoMessage();
             //SendAppMessage();
-            Receive();
+            //Receive();
         }
 
         private static void SendArduinoMessage()
@@ -26,7 +26,7 @@ namespace UDPSenderSimulator
             {
                 Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-                IPAddress broadcast = IPAddress.Parse("192.168.1.23");
+                IPAddress broadcast = IPAddress.Parse("192.168.1.255");
 
                 IPEndPoint ep = new IPEndPoint(broadcast, 30003);
 
@@ -49,7 +49,7 @@ namespace UDPSenderSimulator
                 //11=play
                 //12=lift
                 //13=stop
-                byte command = 0x10;
+                byte command = (byte)3;
 
                 //Signal end of Header Info
                 byte[] cutoffSequence = new byte[6];
@@ -60,7 +60,7 @@ namespace UDPSenderSimulator
                 cutoffSequence[4] = 111;
                 cutoffSequence[5] = 111;
 
-                byte message = 0x51;
+                byte message = (byte)5;
 
                 byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 1 + 1];
                 sourceIP.CopyTo(SendArray, 0);
@@ -87,7 +87,7 @@ namespace UDPSenderSimulator
             {
                 Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-                IPAddress broadcast = IPAddress.Parse("192.168.1.23");
+                IPAddress broadcast = IPAddress.Parse("10.245.202.23");
 
                 IPEndPoint ep = new IPEndPoint(broadcast, 30003);
 

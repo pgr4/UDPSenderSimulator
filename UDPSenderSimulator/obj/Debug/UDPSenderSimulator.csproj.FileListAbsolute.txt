@@ -4,3 +4,8 @@ c:\users\pat\documents\visual studio 2013\Projects\UDPSenderSimulator\UDPSenderS
 c:\users\pat\documents\visual studio 2013\Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug\UDPSenderSimulator.exe
 c:\users\pat\documents\visual studio 2013\Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug\UDPSenderSimulator.pdb
 C:\Users\pat\documents\visual studio 2013\Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug\UDPSenderSimulator.csprojResolveAssemblyReference.cache
+C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\bin\Debug\UDPSenderSimulator.exe.config
+C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug\UDPSenderSimulator.exe
+C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug\UDPSenderSimulator.pdb
+C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\bin\Debug\UDPSenderSimulator.exe
+C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\bin\Debug\UDPSenderSimulator.pdb

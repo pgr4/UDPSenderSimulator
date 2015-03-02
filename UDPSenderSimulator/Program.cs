@@ -60,14 +60,11 @@ namespace UDPSenderSimulator
                 cutoffSequence[4] = 111;
                 cutoffSequence[5] = 111;
 
-                byte message = (byte)5;
-
-                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 1 + 1];
+                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 1];
                 sourceIP.CopyTo(SendArray, 0);
                 destinationIP.CopyTo(SendArray, 4);
                 SendArray[8] = command;
                 cutoffSequence.CopyTo(SendArray, 9);
-                SendArray[15] = command;
 
                 s.SendTo(SendArray, ep);
 
@@ -87,7 +84,7 @@ namespace UDPSenderSimulator
             {
                 Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-                IPAddress broadcast = IPAddress.Parse("10.245.202.23");
+                IPAddress broadcast = IPAddress.Parse("192.168.1.255");
 
                 IPEndPoint ep = new IPEndPoint(broadcast, 30003);
 
@@ -106,10 +103,7 @@ namespace UDPSenderSimulator
                 destinationIP[3] = 5;
 
                 //Command
-                //0=none
-                //1=new album
-                //2=current album
-                byte command = 0x01;
+                byte command = (byte)21;
 
                 //Signal end of Header Info
                 byte[] cutoffSequence = new byte[6];

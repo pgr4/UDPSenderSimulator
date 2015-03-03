@@ -15,12 +15,12 @@ namespace UDPSenderSimulator
         static void Main(string[] args)
         {
             //ipToInt(1,202,23);
-            SendArduinoMessage();
+            SendNewAlbum();
             //SendAppMessage();
             //Receive();
         }
 
-        private static void SendArduinoMessage()
+        private static void SendNewAlbum()
         {
             try
             {
@@ -35,21 +35,17 @@ namespace UDPSenderSimulator
                 sourceIP[0] = 192;
                 sourceIP[1] = 168;
                 sourceIP[2] = 1;
-                sourceIP[3] = 2;
+                sourceIP[3] = 23;
 
                 //Destination IP
                 byte[] destinationIP = new byte[4];
                 destinationIP[0] = 192;
                 destinationIP[1] = 168;
                 destinationIP[2] = 1;
-                destinationIP[3] = 5;
+                destinationIP[3] = 247;
 
                 //Command
-                //10=gotoTrack
-                //11=play
-                //12=lift
-                //13=stop
-                byte command = (byte)3;
+                byte command = 1;
 
                 //Signal end of Header Info
                 byte[] cutoffSequence = new byte[6];
@@ -60,11 +56,15 @@ namespace UDPSenderSimulator
                 cutoffSequence[4] = 111;
                 cutoffSequence[5] = 111;
 
-                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 1];
+                byte[] key = {10,20,30,40,04,60,70,80,90,100};
+
+                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + key.Length + cutoffSequence.Length  + 1];
                 sourceIP.CopyTo(SendArray, 0);
                 destinationIP.CopyTo(SendArray, 4);
                 SendArray[8] = command;
                 cutoffSequence.CopyTo(SendArray, 9);
+                key.CopyTo(SendArray,15);
+                cutoffSequence.CopyTo(SendArray,25);
 
                 s.SendTo(SendArray, ep);
 

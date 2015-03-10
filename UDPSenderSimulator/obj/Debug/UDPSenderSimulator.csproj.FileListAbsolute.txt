@@ -9,3 +9,4 @@ C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug
 C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug\UDPSenderSimulator.pdb
 C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\bin\Debug\UDPSenderSimulator.exe
 C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\bin\Debug\UDPSenderSimulator.pdb
+C:\Users\pat\Desktop\My Projects\UDPSenderSimulator\UDPSenderSimulator\obj\Debug\UDPSenderSimulator.csprojResolveAssemblyReference.cache

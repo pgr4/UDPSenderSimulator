@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace UDPSenderSimulator
@@ -14,10 +15,11 @@ namespace UDPSenderSimulator
 
         static void Main(string[] args)
         {
-            //ipToInt(1,202,23);
-            SendNewAlbum();
-            //SendAppMessage();
-            //Receive();
+            //SendNewAlbum();
+            //SendUpdatePos();
+            //SendCommand(21);
+            //ipToInt(192, 168, 1, 255);
+            DoSend();
         }
 
         private static void SendNewAlbum()
@@ -56,7 +58,7 @@ namespace UDPSenderSimulator
                 cutoffSequence[4] = 111;
                 cutoffSequence[5] = 111;
 
-                byte[] key = {10,20,30,40,88,60,66,80,90,100};
+                byte[] key = {69,20,30,40,50,60,70,80,90,100};
 
                 byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + key.Length + cutoffSequence.Length  + 1];
                 sourceIP.CopyTo(SendArray, 0);
@@ -78,7 +80,7 @@ namespace UDPSenderSimulator
             }
         }
 
-        private static void SendAppMessage()
+        private static void SendUpdatePos()
         {
             try
             {
@@ -93,17 +95,17 @@ namespace UDPSenderSimulator
                 sourceIP[0] = 192;
                 sourceIP[1] = 168;
                 sourceIP[2] = 1;
-                sourceIP[3] = 2;
+                sourceIP[3] = 23;
 
                 //Destination IP
                 byte[] destinationIP = new byte[4];
                 destinationIP[0] = 192;
                 destinationIP[1] = 168;
                 destinationIP[2] = 1;
-                destinationIP[3] = 5;
+                destinationIP[3] = 247;
 
                 //Command
-                byte command = (byte)15;
+                byte command = 9;
 
                 //Signal end of Header Info
                 byte[] cutoffSequence = new byte[6];
@@ -114,19 +116,68 @@ namespace UDPSenderSimulator
                 cutoffSequence[4] = 111;
                 cutoffSequence[5] = 111;
 
-                //Message ID for now is the unique ID
-                byte[] message = new byte[3];
-                message[0] = 0x57;  //id
-                message[1] = 0x51;  //id
-                //Amount of breaks
-                message[2] = 1;     //songs
 
-                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + message.Length + 1];
+                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 2];
                 sourceIP.CopyTo(SendArray, 0);
                 destinationIP.CopyTo(SendArray, 4);
                 SendArray[8] = command;
                 cutoffSequence.CopyTo(SendArray, 9);
-                message.CopyTo(SendArray, 15);
+                SendArray[SendArray.Length - 1] = 10;
+
+                s.SendTo(SendArray, ep);
+
+                Console.WriteLine("Message sent to the broadcast address");
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message + "\n");
+                Console.Write(e.InnerException);
+                Console.Read();
+            }
+        }
+
+        private static void SendCommand(int c)
+        {
+            try
+            {
+                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+                IPAddress broadcast = IPAddress.Parse("192.168.1.255");
+
+                IPEndPoint ep = new IPEndPoint(broadcast, 30003);
+
+                //Sender IP
+                byte[] sourceIP = new byte[4];
+                sourceIP[0] = 192;
+                sourceIP[1] = 168;
+                sourceIP[2] = 1;
+                sourceIP[3] = 23;
+
+                //Destination IP
+                byte[] destinationIP = new byte[4];
+                destinationIP[0] = 192;
+                destinationIP[1] = 168;
+                destinationIP[2] = 1;
+                destinationIP[3] = 247;
+
+                //Command
+                byte command = (byte)c;
+
+                //Signal end of Header Info
+                byte[] cutoffSequence = new byte[6];
+                cutoffSequence[0] = 111;
+                cutoffSequence[1] = 111;
+                cutoffSequence[2] = 111;
+                cutoffSequence[3] = 111;
+                cutoffSequence[4] = 111;
+                cutoffSequence[5] = 111;
+
+
+                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 1];
+                sourceIP.CopyTo(SendArray, 0);
+                destinationIP.CopyTo(SendArray, 4);
+                SendArray[8] = command;
+                cutoffSequence.CopyTo(SendArray, 9);
 
                 s.SendTo(SendArray, ep);
 
@@ -172,6 +223,48 @@ namespace UDPSenderSimulator
             ip += t << 8;
             ip += l;
 
+        }
+
+        private static void DoSend()
+        {
+            IPAddress broadcast = IPAddress.Parse("192.168.1.255");
+
+            IPEndPoint ep = new IPEndPoint(broadcast, 30003);
+            TcpClient tcpClient = new TcpClient(ep);
+            Socket socket = tcpClient.Client;
+            byte[] x = {0, 1, 2, 3, 4};
+            try
+            { // sends the text with timeout 10s
+                Send(socket, x, 0, x.Length, 10000);
+            }
+            catch (Exception ex) { /* ... */ }
+        }
+
+        public static void Send(Socket socket, byte[] buffer, int offset, int size, int timeout)
+        {
+            int startTickCount = Environment.TickCount;
+            int sent = 0;  // how many bytes is already sent
+            do
+            {
+                if (Environment.TickCount > startTickCount + timeout)
+                    throw new Exception("Timeout.");
+                try
+                {
+                    sent += socket.Send(buffer, offset + sent, size - sent, SocketFlags.None);
+                }
+                catch (SocketException ex)
+                {
+                    if (ex.SocketErrorCode == SocketError.WouldBlock ||
+                        ex.SocketErrorCode == SocketError.IOPending ||
+                        ex.SocketErrorCode == SocketError.NoBufferSpaceAvailable)
+                    {
+                        // socket buffer is probably full, wait and try again
+                        Thread.Sleep(30);
+                    }
+                    else
+                        throw ex;  // any serious error occurr
+                }
+            } while (sent < size);
         }
 
     }

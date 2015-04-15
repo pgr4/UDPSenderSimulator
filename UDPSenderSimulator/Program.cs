@@ -15,14 +15,12 @@ namespace UDPSenderSimulator
 
         static void Main(string[] args)
         {
-            //SendNewAlbum();
             SendNewIntAlbum();
             //SendUpdatePos();
-            //SendCommand(14);
-            //ipToInt(192, 168, 1, 255);
-            //DoSend();
-            //var x =BitConverter.ToInt32(new byte[] { 1,0 ,0,0}, 0);
+            //SendCommand(15);
+            //SendCommand(23);
         }
+
         private static void SendNewIntAlbum()
         {
             try
@@ -59,7 +57,7 @@ namespace UDPSenderSimulator
                 cutoffSequence[4] = 111;
                 cutoffSequence[5] = 111;
 
-                byte[] key = { 1, 0, 2, 0, 3, 0, 4, 0, 5, 0 };
+                byte[] key = { 1, 1, 2, 2, 0, 3, 0, 4, 0, 5 };
 
                 byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + key.Length + cutoffSequence.Length + 1];
                 sourceIP.CopyTo(SendArray, 0);
@@ -68,64 +66,6 @@ namespace UDPSenderSimulator
                 cutoffSequence.CopyTo(SendArray, 9);
                 key.CopyTo(SendArray, 15);
                 cutoffSequence.CopyTo(SendArray, 25);
-
-                s.SendTo(SendArray, ep);
-
-                Console.WriteLine("Message sent to the broadcast address");
-            }
-            catch (Exception e)
-            {
-                Console.Write(e.Message + "\n");
-                Console.Write(e.InnerException);
-                Console.Read();
-            }
-        }
-
-        private static void SendNewAlbum()
-        {
-            try
-            {
-                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-                IPAddress broadcast = IPAddress.Parse("192.168.1.255");
-
-                IPEndPoint ep = new IPEndPoint(broadcast, 30003);
-
-                //Sender IP
-                byte[] sourceIP = new byte[4];
-                sourceIP[0] = 192;
-                sourceIP[1] = 168;
-                sourceIP[2] = 1;
-                sourceIP[3] = 255;
-
-                //Destination IP
-                byte[] destinationIP = new byte[4];
-                destinationIP[0] = 192;
-                destinationIP[1] = 168;
-                destinationIP[2] = 1;
-                destinationIP[3] = 54;//54 // 247
-
-                //Command
-                byte command = 1;
-
-                //Signal end of Header Info
-                byte[] cutoffSequence = new byte[6];
-                cutoffSequence[0] = 111;
-                cutoffSequence[1] = 111;
-                cutoffSequence[2] = 111;
-                cutoffSequence[3] = 111;
-                cutoffSequence[4] = 111;
-                cutoffSequence[5] = 111;
-
-                byte[] key = {69,20,30,40,50,60,70,80,90,101};
-
-                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + key.Length + cutoffSequence.Length  + 1];
-                sourceIP.CopyTo(SendArray, 0);
-                destinationIP.CopyTo(SendArray, 4);
-                SendArray[8] = command;
-                cutoffSequence.CopyTo(SendArray, 9);
-                key.CopyTo(SendArray,15);
-                cutoffSequence.CopyTo(SendArray,25);
 
                 s.SendTo(SendArray, ep);
 
@@ -176,12 +116,13 @@ namespace UDPSenderSimulator
                 cutoffSequence[5] = 111;
 
 
-                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 2];
+                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + 3];
                 sourceIP.CopyTo(SendArray, 0);
                 destinationIP.CopyTo(SendArray, 4);
                 SendArray[8] = command;
                 cutoffSequence.CopyTo(SendArray, 9);
-                SendArray[SendArray.Length - 1] = 10;
+                SendArray[SendArray.Length - 2] = 1; //MSB
+                SendArray[SendArray.Length - 1] = 1;//LSB
 
                 s.SendTo(SendArray, ep);
 
@@ -250,6 +191,66 @@ namespace UDPSenderSimulator
             }
         }
 
+        #region
+
+        private static void SendSync()
+        {
+            try
+            {
+                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+                IPAddress broadcast = IPAddress.Parse("192.168.1.255");
+
+                IPEndPoint ep = new IPEndPoint(broadcast, 30003);
+
+                //Sender IP
+                byte[] sourceIP = new byte[4];
+                sourceIP[0] = 192;
+                sourceIP[1] = 168;
+                sourceIP[2] = 1;
+                sourceIP[3] = 255;
+
+                //Destination IP
+                byte[] destinationIP = new byte[4];
+                destinationIP[0] = 192;
+                destinationIP[1] = 168;
+                destinationIP[2] = 1;
+                destinationIP[3] = 247;//54 // 247
+
+                //Command
+                byte command = 5;
+
+                //Signal end of Header Info
+                byte[] cutoffSequence = new byte[6];
+                cutoffSequence[0] = 111;
+                cutoffSequence[1] = 111;
+                cutoffSequence[2] = 111;
+                cutoffSequence[3] = 111;
+                cutoffSequence[4] = 111;
+                cutoffSequence[5] = 111;
+
+                byte[] key = { 1, 1, 0, 2, 0, 3, 0, 4, 0, 5 };
+
+                byte[] SendArray = new byte[sourceIP.Length + destinationIP.Length + cutoffSequence.Length + key.Length + cutoffSequence.Length + 1];
+                sourceIP.CopyTo(SendArray, 0);
+                destinationIP.CopyTo(SendArray, 4);
+                SendArray[8] = command;
+                cutoffSequence.CopyTo(SendArray, 9);
+                key.CopyTo(SendArray, 15);
+                cutoffSequence.CopyTo(SendArray, 25);
+
+                s.SendTo(SendArray, ep);
+
+                Console.WriteLine("Message sent to the broadcast address");
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message + "\n");
+                Console.Write(e.InnerException);
+                Console.Read();
+            }
+        }
+
         private static void Receive()
         {
             UdpClient listener = new UdpClient(listenPort);
@@ -291,7 +292,7 @@ namespace UDPSenderSimulator
             IPEndPoint ep = new IPEndPoint(broadcast, 30003);
             TcpClient tcpClient = new TcpClient(ep);
             Socket socket = tcpClient.Client;
-            byte[] x = {0, 1, 2, 3, 4};
+            byte[] x = { 0, 1, 2, 3, 4 };
             try
             { // sends the text with timeout 10s
                 Send(socket, x, 0, x.Length, 10000);
@@ -325,6 +326,8 @@ namespace UDPSenderSimulator
                 }
             } while (sent < size);
         }
+
+        #endregion
 
     }
 }
